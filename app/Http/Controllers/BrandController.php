@@ -35,5 +35,11 @@ public function update(Request $request, Brand $brand)
     $brand->delete();
 
     return redirect('/brands');
+}
+public function show(Brand $brand)
+{
+    $phones = $brand->phones;
+
+    return view('brands.show', compact('brand', 'phones'));
 }  
 }
