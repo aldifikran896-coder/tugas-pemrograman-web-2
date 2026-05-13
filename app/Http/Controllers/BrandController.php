@@ -19,4 +19,15 @@ class BrandController extends Controller
 
         return view('brands.index', compact('brands'));
     }
+    public function edit(Brand $brand)
+{
+    return view('brands.edit', compact('brand'));
+}
+
+public function update(Request $request, Brand $brand)
+{
+    $brand->update($request->all());
+
+    return redirect('/brands');
+}
 }
