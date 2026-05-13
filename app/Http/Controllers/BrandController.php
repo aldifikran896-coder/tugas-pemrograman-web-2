@@ -30,4 +30,10 @@ public function update(Request $request, Brand $brand)
 
     return redirect('/brands');
 }
+  public function destroy(Brand $brand)
+{
+    $brand->delete();
+
+    return redirect('/brands');
+}  
 }
