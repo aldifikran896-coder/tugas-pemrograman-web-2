@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Phone extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'brand',
+        'brand_id',
         'model',
         'price',
         'stock',
@@ -18,4 +18,9 @@ class Phone extends Model
         'storage',
         'description'
     ];
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
 }
