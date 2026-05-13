@@ -3,26 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\Phone;
+use App\Models\Brand;
 use Illuminate\Http\Request;
 
 class PhoneController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $phones = Phone::latest()->get();
+        $search = $request->search;
+        $brand = $request->brand;
 
-        return view('phones.index', compact('phones'));
+        $phones = Phone::with('brand')
+
+            ->when($search, function($query) use ($search) {
+                $query->where('model', 'like', "%$search%");
+            })
+
+            ->when($brand, function($query) use ($brand) {
+                $query->where('brand_id', $brand);
+            })
+
+            ->latest()
+            ->paginate(5);
+
+        $brands = Brand::all();
+
+        return view('phones.index', compact(
+            'phones',
+            'brands'
+        ));
     }
 
     public function create()
     {
-        return view('phones.create');
+        $brands = Brand::all();
+
+        return view('phones.create', compact('brands'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'brand' => 'required',
+            'brand_id' => 'required',
             'model' => 'required',
             'price' => 'required',
             'stock' => 'required',
@@ -32,37 +54,35 @@ class PhoneController extends Controller
 
         Phone::create($request->all());
 
-        return redirect('/phones')
-            ->with('success', 'Data berhasil ditambahkan');
+        return redirect('/phones');
     }
 
     public function edit(Phone $phone)
     {
-        return view('phones.edit', compact('phone'));
+        $brands = Brand::all();
+
+        return view('phones.edit', compact(
+            'phone',
+            'brands'
+        ));
     }
 
     public function update(Request $request, Phone $phone)
     {
-        $request->validate([
-            'brand' => 'required',
-            'model' => 'required',
-            'price' => 'required',
-            'stock' => 'required',
-            'ram' => 'required',
-            'storage' => 'required',
-        ]);
-
         $phone->update($request->all());
 
-        return redirect('/phones')
-            ->with('success', 'Data berhasil diubah');
+        return redirect('/phones');
     }
 
     public function destroy(Phone $phone)
     {
         $phone->delete();
 
-        return redirect('/phones')
-            ->with('success', 'Data berhasil dihapus');
+        return redirect('/phones');
+    }
+
+    public function show(Phone $phone)
+    {
+        return view('phones.show', compact('phone'));
     }
 }
